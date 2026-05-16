@@ -7,10 +7,15 @@ st.set_page_config(page_title="Predicción de Churn")
 st.title('Predicción de Tasa de Cancelación de Suscripciones (Churn)')
 st.write('Introduce la información del cliente para predecir la probabilidad de churn.')
 
-# Rutas a los modelos (estas rutas deben ser accesibles desde el entorno de Streamlit)
-# Si la aplicación se ejecuta en Colab, '/content/drive/MyDrive' es la base del Drive montado.
+# Rutas a los modelos
+# IMPORTANTE: PARA EL DESPLIEGUE EN STREAMLIT.IO, ESTAS RUTAS DEBEN APUNTAR
+# A LA UBICACIÓN DE TUS ARCHIVOS .PKL DENTRO DE TU REPOSITORIO DE GITHUB.
+# Por ejemplo, si los .pkl están en la raíz del repositorio, las rutas serían:
 churn_model_path = 'modelo_churn.pkl'
 preprocessing_pipeline_path = 'pipeline_preproc.pkl'
+# Si están en una subcarpeta 'models', sería:
+# churn_model_path = 'models/modelo_churn.pkl'
+# preprocessing_pipeline_path = 'models/pipeline_preproc.pkl'
 
 # Cargar el modelo y el pipeline una sola vez para eficiencia
 @st.cache_resource
@@ -20,7 +25,7 @@ def load_resources():
         pipeline = joblib.load(preprocessing_pipeline_path)
         return model, pipeline
     except Exception as e:
-        st.error(f"Error al cargar los recursos: {e}. Asegúrate de que los archivos .pkl existan en las rutas especificadas.")
+        st.error(f"Error al cargar los recursos: {e}. Asegúrate de que los archivos .pkl existan en las rutas especificadas dentro de tu repositorio de GitHub.")
         return None, None
 
 model, pipeline = load_resources()
@@ -35,27 +40,38 @@ if model is not None and pipeline is not None:
     # Nombres, tipos, rangos y opciones de categorías deben ser correctos.
     # =========================================================================
 
+    # Características numéricas
+    edad = st.slider('Edad del Cliente', 18, 90, 30)
+    antiguedad_meses = st.number_input('Antigüedad del Cliente (meses)', min_value=0, max_value=72, value=24)
+    gasto_mensual = st.number_input('Gasto Mensual ($)', min_value=0.0, max_value=200.0, value=50.0, step=0.1)
 
-    # Nuevas características añadidas según tu solicitud:
+    # Características nuevas y categóricas
     uso_mensual_km = st.number_input('Uso Mensual (Km)', min_value=0.0, max_value=1000.0, value=100.0, step=1.0)
     soporte_tickets = st.number_input('Tickets de Soporte Abiertos', min_value=0, max_value=10, value=0)
     region = st.selectbox('Región', ['Norte', 'Centro', 'Sur', 'Este', 'Oeste']) # Asegúrate de que estas opciones coincidan con las de tu modelo
 
-
+    # Características categóricas
+    genero = st.selectbox('Género', ['Masculino', 'Femenino'])
+    servicio_internet = st.selectbox('Servicio de Internet', ['DSL', 'Fibra óptica', 'No'])
+    tiene_soporte_tecnico = st.radio('Tiene Soporte Técnico', ['Sí', 'No'])
 
     # Crear un DataFrame con las entradas del usuario
     # Los NOMBRES DE LAS COLUMNAS deben coincidir con los que el pipeline espera.
     input_data = pd.DataFrame({
+        'Edad': [edad],
+        'Antiguedad_Meses': [antiguedad_meses],
+        'Gasto_Mensual': [gasto_mensual],
         'Uso_Mensual_Km': [uso_mensual_km],
         'Soporte_Tickets': [soporte_tickets],
         'Region': [region],
+        'Genero': [genero],
+        'Servicio_Internet': [servicio_internet],
+        'Tiene_Soporte_Tecnico': [tiene_soporte_tecnico]
     })
 
     if st.button('Predecir Churn'):
         try:
             # Aplicar el pipeline de preprocesamiento
-            # Asegúrate de que `pipeline.transform` acepte el DataFrame directamente
-            # o ajusta según cómo lo entrenaste (ej. `pipeline.fit_transform` si el pipeline no fue fit)
             processed_data = pipeline.transform(input_data)
 
             # Realizar la predicción de probabilidad
