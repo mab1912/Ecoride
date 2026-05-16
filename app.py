@@ -9,8 +9,8 @@ st.write('Introduce la información del cliente para predecir la probabilidad de
 
 # Rutas a los modelos (estas rutas deben ser accesibles desde el entorno de Streamlit)
 # Si la aplicación se ejecuta en Colab, '/content/drive/MyDrive' es la base del Drive montado.
-churn_model_path = '/content/drive/MyDrive/Colab Notebooks/Ejercicios IA/Ecoride/modelo_churn.pkl'
-preprocessing_pipeline_path = '/content/drive/MyDrive/Colab Notebooks/Ejercicios IA/Ecoride/pipeline_preproc.pkl'
+churn_model_path = 'modelo_churn.pkl'
+preprocessing_pipeline_path = 'pipeline_preproc.pkl'
 
 # Cargar el modelo y el pipeline una sola vez para eficiencia
 @st.cache_resource
