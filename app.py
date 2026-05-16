@@ -35,38 +35,21 @@ if model is not None and pipeline is not None:
 
     # =========================================================================
     #              ***** ¡¡IMPORTANTE: AJUSTA ESTAS CARACTERÍSTICAS!! *****
-    # Estos son solo EJEMPLOS. Debes modificarlos para que coincidan EXACTAMENTE
-    # con las características que tu modelo y pipeline de preprocesamiento esperan.
+    # Solo se incluirán las características especificadas por el usuario.
     # Nombres, tipos, rangos y opciones de categorías deben ser correctos.
     # =========================================================================
 
-    # Características numéricas
-    edad = st.slider('Edad del Cliente', 18, 90, 30)
-    antiguedad_meses = st.number_input('Antigüedad del Cliente (meses)', min_value=0, max_value=72, value=24)
-    gasto_mensual = st.number_input('Gasto Mensual ($)', min_value=0.0, max_value=200.0, value=50.0, step=0.1)
-
-    # Características nuevas y categóricas
+    # Características especificadas por el usuario
     uso_mensual_km = st.number_input('Uso Mensual (Km)', min_value=0.0, max_value=1000.0, value=100.0, step=1.0)
     soporte_tickets = st.number_input('Tickets de Soporte Abiertos', min_value=0, max_value=10, value=0)
     region = st.selectbox('Región', ['Norte', 'Centro', 'Sur', 'Este', 'Oeste']) # Asegúrate de que estas opciones coincidan con las de tu modelo
 
-    # Características categóricas
-    genero = st.selectbox('Género', ['Masculino', 'Femenino'])
-    servicio_internet = st.selectbox('Servicio de Internet', ['DSL', 'Fibra óptica', 'No'])
-    tiene_soporte_tecnico = st.radio('Tiene Soporte Técnico', ['Sí', 'No'])
-
     # Crear un DataFrame con las entradas del usuario
     # Los NOMBRES DE LAS COLUMNAS deben coincidir con los que el pipeline espera.
     input_data = pd.DataFrame({
-        'Edad': [edad],
-        'Antiguedad_Meses': [antiguedad_meses],
-        'Gasto_Mensual': [gasto_mensual],
         'Uso_Mensual_Km': [uso_mensual_km],
         'Soporte_Tickets': [soporte_tickets],
-        'Region': [region],
-        'Genero': [genero],
-        'Servicio_Internet': [servicio_internet],
-        'Tiene_Soporte_Tecnico': [tiene_soporte_tecnico]
+        'Region': [region]
     })
 
     if st.button('Predecir Churn'):
